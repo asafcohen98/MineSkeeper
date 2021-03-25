@@ -5,19 +5,27 @@ body {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
- h1 {
-    color: snow;
+h1 {
+    color:snow;
     font-size: 70px;
+    -webkit-text-stroke: 2px black;
+    text-shadow: 2px 2px 2px black;
+    padding: 10px;
+    margin: auto;
+    margin-top: 20px;
 }
 
 .levels-container {
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .levels-container button {
-    margin: 2px;
+    margin:2px;
     border-radius: 8px;
-    background-color: white;
+    color: snow;
+    background-color: black;
+    text-align: center;
     box-shadow: 1px 1px 1px 1px black;
 }
 
@@ -25,41 +33,68 @@ body {
     background-color: lightgrey;
 }
 
-.game-time {
-    display: inline-block;
-    padding: 10px;
+.game-status-container {
+    background: rgb(238,238,238);
+    background: linear-gradient(90deg, rgba(238,238,238,1) 0%, rgba(236,236,236,1) 0%, rgba(212,212,212,1) 50%, rgba(198,193,193,1) 100%);
+    box-shadow: 2px 2px 2px grey;
+    border-radius: 20px;
+    width: 300px;
+    padding: 20px;
+    margin-top: 30px;
+    margin: auto;
     text-align: center;
-    border: 2px white;
-    margin: 50px;
+    position: relative;
+    color: black;
+}
+
+.game-time {
+    color:snow;
+    -webkit-text-stroke: 2px black;
+    text-shadow: 2px 2px 2px black;
+    padding: 10px;
+    width: 200px;
+    height: 40px;
+    margin: auto;
+    margin-top: 20px;
 }
 
 .game-life {
-    display: inline-block;
-    margin-left: 20px;
-}
-
-
-.hints-container {
-    border: 3px solid black;
-    height: 100x;
-    width: 300px;
+    color:snow;
+    -webkit-text-stroke: 2px black;
+    text-shadow: 2px 2px 2px black;
+    padding: 10px;
+    width: 200px;
+    height: 40px;
     margin: auto;
+    margin-top: 20px;
 }
 
-.hints-container button {
+.marked-cells{
+    color:snow;
+    -webkit-text-stroke: 2px black;
+    text-shadow: 2px 2px 2px black;
+    padding: 10px;
+    width: 200px;
+    height: 40px;
+    margin: auto;
+    margin-top: 20px;
+}
+
+/* 
+.hints-container button{
     background-color: transparent;
+    border-color: transparent;
     width: 80px;
-    height: 60px;
-    margin: 10px auto;
-    border: black
+    height: 70px;
+    margin: 5px;
 }
 
-.hints-container img {
-    filter: grayscale(100%);
-    transition: 0.2s;
+.hints-container img{
+    filter: grayscale(100);
     width: 100%;
     height: 100%;
 }
+ */
 
 .emoji-reset-container {
     margin-top: 20px

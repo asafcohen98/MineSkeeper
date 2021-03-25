@@ -13,10 +13,8 @@
         <button onclick="changeLevel(8,12)">Medium</button>
         <button onclick="changeLevel(12,30)">Expert</button>
     </div>
-    <div class="game-time-container">
-
-    </div>
-        <h2 class="game-time">Time In Seconds: <span>0.000</span></h2>
+    <div class="game-status-container">
+        <h2 class="game-time">Time In Seconds <span>0.000</span></h2>
         <h2 class="game-life"></h2>
         <h2 class="marked-cells">Flag counter: 0</h2>
         <!-- <div class="hints-container">
@@ -26,12 +24,12 @@
         </div> -->
     </div>
     
+    
     <div class="emoji-reset-container">
         <button onclick="resetGame(this)" class="emoji-btn">😃</button>
     </div>
-    <div class="game-board">
+    <div class="game-board"></div>
 
-    </div>
 
     <script>window.addEventListener("contextmenu", e => e.preventDefault())</script>
     <script src="js/utils.js"></script>

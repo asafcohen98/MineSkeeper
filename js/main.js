@@ -47,9 +47,9 @@ function changeLevel(size, mines) {
     }
     if (gLevel.Size === 8) {
         gGame.life = 3
-    } else if(gLevel.Size === 12) {
+    } else if (gLevel.Size === 12) {
         gGame.life = 4
-    }else{
+    } else {
         gGame.life = 2
     }
     updateLife(0)
@@ -333,12 +333,7 @@ function resetGame(elBtn) {
 
 
 
-
-
-
-
-
-// TRY LATER
+// // TRY LATER
 
 // // That function update hint that clicked
 // function hintClicked(elBtn) {
@@ -364,15 +359,12 @@ function resetGame(elBtn) {
 //             if (j < 0 || j >= gBoard.length) continue;
 //             var currCell = gBoard[i][j]
 //             if (currCell.isShown && currCell.isMarked) continue
-//             if (currCell.minesAroundCount) {
-//                 renderCell(i, j, currCell.minesAroundCount)
-//             } else if (currCell.isMine) {
-//                 renderCell(i, j, MINE_IMG)
-//             } else {
-//                 renderCell(i, j, '')
-//             }
+//             cellClicked(i,j)
 //             var strHTML = `<button onclick="expandShown(${i},${j});hintShown(${i},${j})" oncontextmenu="cellMarked(this,${i},${j})"></button>`
-//             setTimeout(function(){renderCell(i,j,strHTML)}, 1000)
+//             var elCurrCell = document.querySelector(`.cell-${i}-${j}`)
+//             setTimeout(function () {
+//             elCurrCell.innerHTML = strHTML
+//             }, 1000)
 //         }
 //     }
 // }
