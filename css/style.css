@@ -1,0 +1,116 @@
+body {
+    text-align: center;
+    background: rgb(207, 207, 207);
+    background: linear-gradient(90deg, rgba(207, 207, 207, 1) 11%, rgba(143, 143, 143, 1) 56%, rgba(212, 212, 212, 1) 100%);
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+ h1 {
+    color: snow;
+    font-size: 70px;
+}
+
+.levels-container {
+    margin-top: 20px;
+}
+
+.levels-container button {
+    margin: 2px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 1px 1px 1px 1px black;
+}
+
+.levels-container button:hover {
+    background-color: lightgrey;
+}
+
+.game-time {
+    display: inline-block;
+    padding: 10px;
+    text-align: center;
+    border: 2px white;
+    margin: 50px;
+}
+
+.game-life {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+
+.hints-container {
+    border: 3px solid black;
+    height: 100x;
+    width: 300px;
+    margin: auto;
+}
+
+.hints-container button {
+    background-color: transparent;
+    width: 80px;
+    height: 60px;
+    margin: 10px auto;
+    border: black
+}
+
+.hints-container img {
+    filter: grayscale(100%);
+    transition: 0.2s;
+    width: 100%;
+    height: 100%;
+}
+
+.emoji-reset-container {
+    margin-top: 20px
+}
+
+.emoji-reset-container button {
+    box-shadow: black;
+    background-color: grey;
+    height: 70px;
+    width: 70px;
+}
+
+.emoji-btn {
+    font-size: 40px;
+}
+
+/* 
+.game-board{
+} */
+
+table {
+    position: relative;
+    margin: auto;
+    border: black;
+}
+
+td {
+    background-color: lightgray;
+    text-align: center;
+    width: 40px;
+    height: 40px;
+}
+
+td button {
+    background-color: grey;
+    box-shadow: 2px 2px 2px black;
+    text-align: center;
+    border: black;
+    height: 100%;
+    width: 100%;
+    margin: auto;
+}
+
+td img {
+    width: 15px;
+    height: 15px;
+    margin: auto;
+}
+
+button {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    outline: transparent;
+    cursor: pointer;
+}
