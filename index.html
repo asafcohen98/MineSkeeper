@@ -6,8 +6,15 @@
 </head>
 
 <body onload="initGame()">
-   
-         <h1>Mine Sweeper</h1>
+    <div class="header">
+        <h1>Mine Sweeper</h1>
+    </div>
+    <div class="scores-container">
+        <h1>Best Scores</h1>
+        <h3 class="beginner-level">Beginner: <span>No Score </span></h3>
+        <h3 class="medium-level">Medium: <span>No Score </span></h3>
+        <h3 class="expert-level">Expert: <span>No Score </span> </h3>
+    </div>
     <div class="levels-container">
         <button onclick="changeLevel(4,2)">Beginner</button>
         <button onclick="changeLevel(8,12)">Medium</button>
@@ -17,16 +24,19 @@
         <h2 class="game-time">Time In Seconds <span>0.000</span></h2>
         <h2 class="game-life"></h2>
         <h2 class="marked-cells">Flag counter: 0</h2>
+        <button onclick="manuallyMode(this)" class="manuallymode-btn">Manually create mines</button>
         <!-- <div class="hints-container">
             <button data-id=0 onclick="hintClicked(this)"><img class="hint0"  src="./img/hint.png"/></button>
             <button data-id=1 onclick="hintClicked(this)"><img class="hint1" src="./img/hint.png"/></button>
             <button data-id=2 onclick="hintClicked(this)"><img class="hint2" src="./img/hint.png"/></button>
         </div> -->
     </div>
-    
-    
-    <div class="emoji-reset-container">
+
+
+    <div class="reset-container">
         <button onclick="resetGame(this)" class="emoji-btn">😃</button>
+        <button onclick="safeClick(this)" class="safeclick-btn">Safe Click</button>
+        <h3><span>3</span> clicks available</h3>
     </div>
     <div class="game-board"></div>
 

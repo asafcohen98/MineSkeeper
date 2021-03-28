@@ -8,18 +8,25 @@ const NORAML_EMOJI = '😃'
 const WRONG_EMOJI = '😵'
 const LIFE_EMOJI = '❤️'
 
+
 // Global variables
+var gBestScore = {
+    beginnerBest: 0,
+    mediumBest: 0,
+    expertBest: 0
+}
 var gLevel = {}
-var gHints = [false, false, false]
+// var gHints = [false, false, false]
 var gBoard
 var gMinesPos = []
 var gTimeInterval
 var gGame = {
     isOn: false,
-    isHintClick: false,
     isFirstClick: false,
     isStartTime: false,
+    isManually: false,
     life: 2,
+    safeClickCount: 3,
     shownCount: 0,
     markedCount: 0,
     foundMinesCount: 0,
@@ -35,6 +42,7 @@ function initGame() {
     gBoard = buildBoard()
     renderBoard(gBoard)
     updateLife(0)
+    renderScore()
     gGame.isOn = true
 }
 
@@ -53,6 +61,7 @@ function changeLevel(size, mines) {
         gGame.life = 2
     }
     updateLife(0)
+    renderScore()
     gBoard = buildBoard()
     renderBoard(gBoard)
 }
@@ -82,7 +91,7 @@ function renderBoard(board) {
         strHTML += '<tr>'
         for (var j = 0; j < board.length; j++) {
             var className = `cell-${i}-${j}`
-            var buttonHTML = `<button onclick="expandShown(${i},${j});hintShown(${i},${j})" oncontextmenu="cellMarked(this,${i},${j})"></button>`
+            var buttonHTML = `<button onclick="expandShown(${i},${j});manuallyCreateMines(${i},${j})" oncontextmenu="cellMarked(this,${i},${j})"></button>`
             strHTML += `<td class="${className}">${buttonHTML}</td>`
         }
         strHTML += '</tr>'
@@ -156,7 +165,7 @@ function cellClicked(i, j) {
         if (gGame.life) {
             setTimeout(function () {
                 elMineCell.style.backgroundColor = 'lightgray'
-                elMineCell.innerHTML = `<button onclick="expandShown(${i},${j});hintShown(${i},${j})" oncontextmenu="cellMarked(this,${i},${j})"></button>`
+                elMineCell.innerHTML = `<button onclick="expandShown(${i},${j});manuallyCreateMines(${i},${j})" oncontextmenu="cellMarked(this,${i},${j})"></button>`
                 elEmoji.innerText = NORAML_EMOJI
             }, 500)
             return
@@ -209,13 +218,6 @@ function expandShown(cellI, cellJ) {
         gGame.isStartTime = true
         startTime()
     }
-    if (!gGame.shownCount) {
-        gGame.isFirstClick = true
-    } else if (gGame.isFirstClick) {
-        gMinesPos = setMines(gBoard)
-        setMinesNegsCount(gBoard)
-        gGame.isFirstClick = false
-    }
     var currCell = gBoard[cellI][cellJ]
     if (currCell.isShown) return
     if (currCell.minesAroundCount) {
@@ -224,12 +226,26 @@ function expandShown(cellI, cellJ) {
     } else if (currCell.isMine) {
         cellClicked(cellI, cellJ)
         return
+    } else if (!gGame.shownCount) {
+        gGame.isFirstClick = true
     }
+    cellClicked(cellI, cellJ)
     for (var i = cellI - 1; i <= cellI + 1; i++) {
         if (i < 0 || i >= gBoard.length) continue
         for (var j = cellJ - 1; j <= cellJ + 1; j++) {
             if (j < 0 || j >= gBoard.length) continue
+            if (i === cellI && j === cellJ) continue
+            if (gGame.isFirstClick && !gGame.isManually) {
+                gMinesPos = setMines(gBoard)
+                setMinesNegsCount(gBoard)
+                gGame.isFirstClick = false
+            }
+            if(gGame.isManually){
+                setMinesNegsCount(gBoard)
+            }
             if (gBoard[i][j].isShown) continue
+            if (gBoard[i][j].isMine) continue
+            if (gBoard[i][j].isMarked) continue
             cellClicked(i, j)
         }
     }
@@ -255,11 +271,12 @@ function updateMarkCells(diff) {
 function victory() {
     gGame.isOn = false
     gGame.isStartTime = false
+    console.log(gGame.secsPassed)
     clearInterval(gTimeInterval)
+    updateBestScore(gLevel.Size, gGame.secsPassed)
     var elGameLife = document.querySelector('.game-life')
     elGameLife.innerText = 'Victory !'
     document.querySelector('.emoji-btn').innerText = WIN_EMOJI
-
 }
 
 // That function called when game over
@@ -299,6 +316,12 @@ function resetGame(elBtn) {
     elBtn.innerText = NORAML_EMOJI
     var elGameTime = document.querySelector('.game-time span')
     elGameTime.innerText = '0.000'
+    var elMarkedCells = document.querySelector('.marked-cells')
+    elMarkedCells.innerText = 'Flag counter: 0'
+    var elClicksSpan = document.querySelector('.reset-container h3 span')
+    elClicksSpan.innerText = '3'
+    var elManuallyBtn = document.querySelector('.manuallymode-btn')
+    elManuallyBtn.innerText = 'Manually create mines'
     gLevel = {
         Size: 4,
         Mines: 2
@@ -307,64 +330,135 @@ function resetGame(elBtn) {
         isOn: true,
         isFirstClick: false,
         isStartTime: false,
+        isManually: false,
         life: 2,
+        safeClickCount: 3,
         shownCount: 0,
         markedCount: 0,
         foundMinesCount: 0,
         secsPassed: 0
     }
+    gMinesPos = []
     gBoard = buildBoard()
     renderBoard(gBoard)
     updateLife(0)
+    renderScore()
 }
 
+// That function gets (size,secPassed) and update the best score on board
+function updateBestScore(size, secsPassed) {
+    if (!localStorage.getItem('beginner') && !localStorage.getItem('medium') && !localStorage.getItem('expert')) {
+        localStorage.setItem('beginner', Infinity)
+        localStorage.setItem('medium', Infinity)
+        localStorage.setItem('expert', Infinity)
+    }
+    switch (size) {
+        case 4:
+            var currBeginnerBest = localStorage.getItem('beginner')
+            if ((secsPassed / 1000) < currBeginnerBest) {
+                localStorage.setItem('beginner', (secsPassed / 1000))
+                var elBeginnerScore = document.querySelector('.beginner-level span')
+                elBeginnerScore.innerText = localStorage.getItem('beginner')
+            }
+            break
+        case 8:
+            var currMediumBest = localStorage.getItem('medium')
+            if ((secsPassed / 1000) > currMediumBest) {
+                localStorage.setItem('medium', (secsPassed / 1000))
+                var elBeginnerScore = document.querySelector('.medium-level span')
+                elBeginnerScore.innerText = localStorage.getItem('medium')
+            }
+            break
+        case 12:
+            var currExpertBest = localStorage.getItem('expert')
+            if ((secsPassed / 1000) > currExpertBest) {
+                localStorage.setItem('expert', (secsPassed / 1000))
+                var elBeginnerScore = document.querySelector('.expert-level span')
+                elBeginnerScore.innerText = localStorage.getItem('expert')
+            }
+            break
+    }
+}
+
+// That function render the current best score
+function renderScore() {
+    var elBeginnerScore = document.querySelector('.beginner-level span')
+    var elMediumScore = document.querySelector('.medium-level span')
+    var elExpertScore = document.querySelector('.expert-level span')
+    if (localStorage.getItem('beginner') !== Infinity) {
+        elBeginnerScore.innerText = localStorage.getItem('beginner')
+    }
+    if (localStorage.getItem('medium') === Infinity) {
+        elMediumScore.innerText = localStorage.getItem('medium')
+    }
+    if (localStorage.getItem('expert') === Infinity) {
+        elExpertScore.innerText = localStorage.getItem('expert')
+    }
+}
+
+// That function gets board and returns an array with locations of no mine cells
+function getNoMineCells(board) {
+    var noMineCells = []
+    for (var i = 0; i < board.length; i++) {
+        for (var j = 0; j < board.length; j++) {
+            if (board[i][j].isMine) continue
+            if (board[i][j].isShown) continue
+            var currPos = {
+                i,
+                j
+            }
+            noMineCells.push(currPos)
+        }
+    }
+    return noMineCells
+}
+
+// That function marks a safe cell (no mine cell) when user click on the safe btn
+function safeClick(elBtn) {
+    if (!gGame.safeClickCount) return
+    var noMineCells = getNoMineCells(gBoard)
+    console.log(noMineCells)
+    var randomCellIdx = getRandomInt(0, noMineCells.length)
+    var randomCellPos = noMineCells[randomCellIdx]
+    console.log(randomCellPos.i)
+    var elCell = document.querySelector(`.cell-${randomCellPos.i}-${randomCellPos.j} button`)
+    elCell.style.backgroundColor = 'yellow'
+    setTimeout(function () { elCell.style.backgroundColor = 'grey' }, 1000)
+    gGame.safeClickCount--
+    var elClicksSpan = document.querySelector('.reset-container h3 span')
+    elClicksSpan.innerText = gGame.safeClickCount
+}
+
+// That function change the game mode to manually create mode when user click on the manually btn
+function manuallyMode(elBtn){
+if(gGame.isOn && gGame.isManually) return
+if(!gGame.isManually){
+    gGame.isManually = true
+    gGame.isOn = false
+    elBtn.innerText = 'Start to set Mines'
+} 
+}
+
+// That function sets mines when user is clicking on cells (only in the before mines set)
+function manuallyCreateMines(cellI,cellJ){
+    if(!gGame.isManually) return
+    if(gGame.isManually && gGame.isOn) return
+    if(gBoard[cellI][cellJ].isMine) return
+    var elCell = document.querySelector(`.cell-${cellI}-${cellJ} button`)
+    elCell.style.backgroundColor = 'black'
+    setTimeout(function(){elCell.style.backgroundColor = 'grey'},500)
+    gBoard[cellI][cellJ].isMine = true
+    var currMinePos = {
+        i: cellI,
+        j: cellJ
+    }
+    gMinesPos.push(currMinePos)
+    if(gMinesPos.length === gLevel.Mines){
+        var elManuallyBtn = document.querySelector('.manuallymode-btn')
+        elManuallyBtn.innerText = 'Set is finished'
+        gGame.isOn = true
+    }
+}
+    
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // TRY LATER
-
-// // That function update hint that clicked
-// function hintClicked(elBtn) {
-//     var i = elBtn.dataset.id
-//     var elHint = document.querySelector(`.hint${i}`)
-//     if (!gHints[i]) {
-//         if (gGame.isHintClick) return
-//         gHints[i] = true
-//         gGame.isHintClick = true
-//         elHint.style.filter = 'grayscale(0%)'
-//     } else {
-//         gHints[i] = false
-//         gGame.isHintClick = false
-//         elHint.style.filter = 'grayscale(100%)'
-//     }
-// }
-// // That function gets (i,j) called when user click a hint and revealed a cell that he clicked for second
-// function hintShown(cellI, cellJ) {
-//     if (!gGame.isHintClick) return
-//     for (var i = cellI - 1; i <= cellI + 1; i++) {
-//         if (i < 0 || i >= gBoard.length) continue;
-//         for (var j = cellJ - 1; j <= cellJ + 1; j++) {
-//             if (j < 0 || j >= gBoard.length) continue;
-//             var currCell = gBoard[i][j]
-//             if (currCell.isShown && currCell.isMarked) continue
-//             cellClicked(i,j)
-//             var strHTML = `<button onclick="expandShown(${i},${j});hintShown(${i},${j})" oncontextmenu="cellMarked(this,${i},${j})"></button>`
-//             var elCurrCell = document.querySelector(`.cell-${i}-${j}`)
-//             setTimeout(function () {
-//             elCurrCell.innerHTML = strHTML
-//             }, 1000)
-//         }
-//     }
-// }
